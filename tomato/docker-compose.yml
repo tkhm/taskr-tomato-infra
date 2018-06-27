@@ -1,0 +1,34 @@
+version: "3"
+services:
+  front:
+    build: httpd/.
+    links:
+      - api
+    ports:
+      - "10080:80"
+    volumes:
+      - "/private/var/local/tomato/apache2/htdocs:/usr/local/apache2/htdocs"
+
+  api:
+    build: tomcat/.
+    links:
+      - db
+    ports:
+      - "18080:8080"
+    volumes:
+      - "/private/var/local/tomato/tomcat/webapps:/usr/local/tomcat/webapps"
+      - "/private/var/local/tomato/tomcat/logs:/usr/local/tomcat/logs"
+
+  db:
+    build: postgres/.
+    ports:
+      - "15432:5432"
+    volumes:
+      - "/private/var/local/tomato/postgresql/data:/var/lib/postgresql/data"
+
+  proxy:
+    build: proxy/.
+    links:
+      - front
+    ports:
+      - "10443:443"
